@@ -1,7 +1,7 @@
-FROM python:3.9.20-alpine
+FROM python:3.9.20
 
-RUN apk update && apk upgrade 
-RUN adduser -D cige
+RUN apt-get update && apt-get upgrade 
+RUN useradd -ms /bin/bash cige
 RUN mkdir /app
 
 COPY requirements.txt /app/.

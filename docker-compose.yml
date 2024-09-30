@@ -4,6 +4,11 @@ services:
     build: .
     ports:
       - "5000:5000"
+    environment:
+      - DB_HOST=bd
+      - DB_USER=morbidus
+      - DB_PASS=marvel
+      - DB_SCHEMA=morbidus
   
   bd:
     image: mysql:8.0-debian
@@ -12,3 +17,5 @@ services:
       - MYSQL_DATABASE=morbidus
       - MYSQL_USER=morbidus
       - MYSQL_PASSWORD=marvel
+    volumes:
+      - ./mysql-init:/docker-entrypoint-initdb.d
