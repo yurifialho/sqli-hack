@@ -1,0 +1,14 @@
+services:
+  web:
+    image: morbidus
+    build: .
+    ports:
+      - "5000:5000"
+  
+  bd:
+    image: mysql:8.0-debian
+    environment:
+      - MYSQL_ROOT_PASSWORD=cige123456
+      - MYSQL_DATABASE=morbidus
+      - MYSQL_USER=morbidus
+      - MYSQL_PASSWORD=marvel
