@@ -6,11 +6,12 @@ CREATE TABLE IF NOT EXISTS usuarios (
 );
 
 -- Inserir alguns usuários de exemplo com senhas já hashadas
--- A senha "123456" foi usada para esses exemplos e está hashada com bcrypt
 INSERT INTO usuarios (username, password) VALUES 
-('joao', '123456'), 
-('maria', '123456'), 
-('pedro', '123456'); 
+('joao', '1#6A26Zw%kQgq!i$*g0ntu&zKP'), 
+('maria', 'a1&KWLEQiBd^9ZUM5o1N9H*u#P'), 
+('pedro', 'FPhqbk&0*3n7#CL63zAISqUu^A')
+('admin', '123456');
+ 
 
 
 CREATE TABLE IF NOT EXISTS flag (

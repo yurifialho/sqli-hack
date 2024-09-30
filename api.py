@@ -1,3 +1,12 @@
+#! /usr/bin/python
+#
+# @author Yuri Fialho
+# @since 30/09/2024
+#
+# ------------------------------------------------------------
+# API EDUCATIVA PARA VULNERABILIDADES DO TIPO SQL INJECTIONS
+# ------------------------------------------------------------
+
 from flask import Flask, request, jsonify
 from flasgger import APISpec, Schema, Swagger
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
@@ -35,18 +44,15 @@ app.config['MYSQL_DB'] = os.getenv("DB_SCHEMA") or 'morbidus'
 # Inicializa a conexão MySQL
 mysql = MySQL(app)
 
-# Lista para armazenar os usuários
-usuarios = []
-
-
 # -----------------------------------------------
 #  ROTAS DO CRUD DA APLICACAO
 # -----------------------------------------------
 
 
 # Rota para listar todos os usuários (READ)
+# Exemplo: curl --location 'http://localhost:5000/usuarios' --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyNzcwOTQ3OSwianRpIjoiNGY0NjI5YmQtN2I0OS00ZjJiLThmZDMtNTVmZGM0OTA3MDJiIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6Im1hcmlhIiwibmJmIjoxNzI3NzA5NDc5LCJjc3JmIjoiZGEyYTgxN2ItNzZkMC00ZDU3LTk5MjItNzM1MTBlYjhmOGRhIiwiZXhwIjoxNzI3NzEwMzc5fQ.v8qEuSBy_6JLg4paOMB2WLexsC342BTXEfRGKIj-UmY'
 @app.route('/usuarios', methods=['GET'])
-#@jwt_required()
+@jwt_required()
 def listar_usuarios():
     """
     Listar todos os usuários
@@ -67,8 +73,9 @@ def listar_usuarios():
     return jsonify(lista_usuarios), 200
 
 # Rota para obter um único usuário pelo username (READ)
+# Url Vunerável: curl --location 'http://localhost:5000/usuarios/'\'' or 1=1 or '\''' --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyNzcxMDQzNywianRpIjoiNmE3OTc0MzItYjk5OS00OTY4LTljNDAtYTYwZGU5YTNmOTkxIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6Im1hcmlhIiwibmJmIjoxNzI3NzEwNDM3LCJjc3JmIjoiNDdkYmQ3ZDQtYzU0Yy00YmIwLThlODYtNDNhM2IwOWIwNzA0IiwiZXhwIjoxNzI3NzExMzM3fQ.U6fyUtpJaAtjTxZbAWwSRHmTFscVUsp6OJNy2xDTN6A'
 @app.route('/usuarios/<username>', methods=['GET'])
-#@jwt_required()
+@jwt_required()
 def obter_usuario(username):
     """
     Obter um usuário específico
@@ -88,7 +95,7 @@ def obter_usuario(username):
         description: Usuário não encontrado
     """
     cur = mysql.connection.cursor()
-    cur.execute("SELECT id, username FROM usuarios WHERE username = %s", [username])
+    cur.execute("SELECT id, username FROM usuarios WHERE username = '"+username+"'")
     user = cur.fetchone()
     cur.close()
 
@@ -98,7 +105,7 @@ def obter_usuario(username):
 
 # Rota para cadastrar um novo usuário (CREATE)
 @app.route('/usuarios', methods=['POST'])
-#@jwt_required()
+@jwt_required()
 def cadastrar_usuario():
     """
     Cadastrar um novo usuário
@@ -143,7 +150,7 @@ def cadastrar_usuario():
 
 # Rota para atualizar um usuário (UPDATE)
 @app.route('/usuarios/<username>', methods=['PUT'])
-#@jwt_required()
+@jwt_required()
 def atualizar_usuario(username):
     """
     Atualizar um usuário
@@ -187,7 +194,7 @@ def atualizar_usuario(username):
 
 # Rota para deletar um usuário (DELETE)
 @app.route('/usuarios/<username>', methods=['DELETE'])
-#@jwt_required()
+@jwt_required()
 def deletar_usuario(username):
     """
     Deletar um usuário
@@ -239,6 +246,7 @@ def home():
 # -----------------------------------------------
 
 # Rota de login para gerar o token JWT
+# Exemplo: curl --location 'http://localhost:5000/login' --header 'Content-Type: application/json' --data '{ "password": "123456","username": "maria"}'
 @app.route('/login', methods=['POST'])
 def login():
     """
@@ -275,58 +283,11 @@ def login():
     cur.execute("SELECT * FROM usuarios WHERE username = %s", [username])
     user = cur.fetchone()
     cur.close()
-
-    if user and check_password_hash(user[2], password):  # user[2] é a coluna da senha
+    print(user)
+    if user and user[2] == password:  # user[2] é a coluna da senha
         token = create_access_token(identity=username)
         return jsonify(access_token=token), 200
     return jsonify({'mensagem': 'Nome de usuário ou senha incorretos!'}), 401
-
-# Rota para registro de novos usuários (sem necessidade de autenticação)
-@app.route('/register', methods=['POST'])
-def registrar_usuario():
-    """
-    Registrar um novo usuário
-    ---
-    tags:
-      - Autenticacao
-    parameters:
-      - name: body
-        in: body
-        required: true
-        description: Dados do usuário
-        schema:
-          type: object
-          required:
-            - username
-            - password
-          properties:
-            username:
-              type: string
-            password:
-              type: string
-    responses:
-      201:
-        description: Usuário registrado com sucesso
-      400:
-        description: Usuário já existe
-    """
-    dados = request.json
-    username = dados.get('username')
-    password = generate_password_hash(dados.get('password'))
-    if not username or not password:
-        return jsonify({'mensagem': 'Nome de usuário e senha são obrigatórios!'}), 400
-
-    cur = mysql.connection.cursor()
-    try:
-        cur.execute("INSERT INTO usuarios (username, password) VALUES (%s, %s)", (username, password))
-        mysql.connection.commit()
-        return jsonify({'mensagem': 'Usuário registrado com sucesso!'}), 201
-    except:
-        return jsonify({'mensagem': 'Erro ao registrar usuário!'}), 400
-    finally:
-        cur.close()
-    
-
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
