@@ -2,6 +2,7 @@ services:
   web:
     image: morbidus
     build: .
+    restart: unless-stopped
     ports:
       - "80:5000"
     environment:
@@ -12,8 +13,9 @@ services:
   
   bd:
     image: mysql:8.0-debian
-    ports:
-      - "3306:3306"
+    restart: unless-stopped
+    #ports:
+    #  - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=cige123456
       - MYSQL_DATABASE=morbidus
