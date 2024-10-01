@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
 INSERT INTO usuarios (username, password) VALUES 
 ('joao', '1#6A26Zw%kQgq!i$*g0ntu&zKP'), 
 ('maria', 'a1&KWLEQiBd^9ZUM5o1N9H*u#P'), 
-('pedro', 'FPhqbk&0*3n7#CL63zAISqUu^A')
+('pedro', 'FPhqbk&0*3n7#CL63zAISqUu^A'),
 ('admin', '123456');
  
 
