@@ -6,18 +6,19 @@ services:
     ports:
       - "80:5000"
     environment:
-      - DB_HOST=bd
+      - DATABASE_TYPE=MYSQL
+      - DB_HOST=bd-mysql
       - DB_USER=morbidus
       - DB_PASS=marvel
       - DB_SCHEMA=morbidus
     depends_on:
-      - db
+      - bd-mysql
   
-  bd:
+  bd-mysql:
     image: mysql:8.0-debian
     restart: unless-stopped
-    #ports:
-    #  - "3306:3306"
+    ports:
+      - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=cige123456
       - MYSQL_DATABASE=morbidus

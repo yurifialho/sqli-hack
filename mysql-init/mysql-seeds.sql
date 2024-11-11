@@ -7,10 +7,10 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
 -- Inserir alguns usuários de exemplo com senhas já hashadas
 INSERT INTO usuarios (username, password) VALUES 
-('joao', '1#6A26Zw%kQgq!i$*g0ntu&zKP'), 
-('maria', 'a1&KWLEQiBd^9ZUM5o1N9H*u#P'), 
-('pedro', 'FPhqbk&0*3n7#CL63zAISqUu^A'),
-('admin', '123456');
+('joao', '86232fc52644bdd06cdf42c3521627f1'), 
+('maria', 'e10adc3949ba59abbe56e057f20f883e'), 
+('pedro', '3fb00fb776351db4f46be3b69a679756'),
+('admin', '86232fc52644bdd06cdf42c3521627f1');
  
 
 

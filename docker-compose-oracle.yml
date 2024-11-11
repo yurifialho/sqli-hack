@@ -1,0 +1,28 @@
+services:
+  web:
+    image: morbidus-oracle
+    build: .
+    restart: always
+    ports:
+      - "80:5000"
+    environment:
+      - DATABASE_TYPE=ORACLE
+      - DB_HOST=bd-oracle
+      - DB_USER=system
+      - DB_PASS=oracle
+      - DB_SCHEMA=orcl
+    depends_on:
+      - bd-oracle
+  
+  bd-oracle:
+    image: vulhub/oracle:12c-ee
+    restart: always
+    ports:
+      - 1521:1521
+    volumes:
+      - ./oracle-init:/oracle.init.d
+    # Username: system
+    # Password: oracle
+    # Host: db
+    # Port: 1521
+    # ORACLE_SID orcl

@@ -1,0 +1,27 @@
+services:
+  web:
+    image: morbidus-postgres
+    build: .
+    restart: unless-stopped
+    ports:
+      - "80:5000"
+    environment:
+      - DATABASE_TYPE=POSTGRES
+      - DB_HOST=bd-postgres
+      - DB_USER=morbidus
+      - DB_PASS=marvel
+      - DB_SCHEMA=morbidus
+    depends_on:
+      - bd-postgres
+  
+  bd-postgres:
+    image: vulhub/postgres:9.6.7
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=morbidus
+      - POSTGRES_USER=morbidus
+      - POSTGRES_PASSWORD=marvel
+    volumes:
+      - ./postgres-init:/docker-entrypoint-initdb.d
